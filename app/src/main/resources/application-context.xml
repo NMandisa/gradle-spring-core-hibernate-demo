@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ~ Copyright (c) 2024. ~ Author : Noxolo.Mkhungo -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/data/jpa
+    https://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <context:component-scan base-package="za.co.mkhungo"/>
+    <context:annotation-config/>
+    <context:property-placeholder location="classpath:application.properties"/>
+    <context:component-scan base-package="za.co.mkhungo.repository">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository" />
+    </context:component-scan>
+
+
+    <jpa:repositories base-package="za.co.mkhungo.repository" entity-manager-factory-ref="entityManagerFactory" transaction-manager-ref="transactionManager"/>
+
+
+    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource"  destroy-method="close">
+        <constructor-arg ref="hikariConfig" />
+    </bean>
+
+    <bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+        <property name="poolName" value="${hikari.config.poolName}" />
+        <property name="connectionTestQuery" value="${hikari.config.connectionTestQuery}" />
+        <property name="dataSourceClassName" value="${hikari.config.dataSourceClassName}" />
+        <property name="autoCommit" value="false"/>
+        <property name="dataSourceProperties">
+            <props>
+                <prop key="url">${hikari.config.dataSource.url}</prop>
+                <prop key="user">${hikari.config.dataSource.user}</prop>
+                <prop key="password">${hikari.config.dataSource.password}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="jpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="packagesToScan" value="za.co.mkhungo.model" />
+        <property name="persistenceUnitName" value="spring-jackson-json" />
+       <!-- <property name="" value="org.springframework.data.jpa.provider.PersistenceProvider"/>-->
+        <property name="jpaVendorAdapter" ref="jpaVendorAdapter"/>
+        <property name="jpaProperties">
+            <props>
+                <prop key="jpa.show-sql">true</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory" />
+    </bean>
+    <tx:annotation-driven/>
+
+    <bean id="persistenceExceptionTranslationPostProcessor" class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
+    <!--<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+    </bean>-->
+</beans>

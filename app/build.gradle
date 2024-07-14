@@ -1,0 +1,66 @@
+plugins {
+    id 'application'
+}
+tasks.register('prepareKotlinBuildScriptModel'){}
+task wrapper(type: Wrapper){
+    gradleVersion = '8.7'
+}
+
+//For reference purposes :
+// https://stackoverflow.com/questions/59020190/how-to-create-a-gradle-task-to-run-only-a-specific-tests-in-spring
+/*def test = tasks.named("test"){
+    useJUnitPlation{
+        excludeTags 'intergration'
+    }
+}
+
+def integrationTest = tasks.register("integrationTest1",Test){
+    useJUnitPlation{
+        includeTags 'integration'
+    }
+    shouldRunAfter test
+}
+
+tasks.named("check"){
+    evaluationDependsOn(integrationTest)
+}*/
+
+dependencies {
+    implementation('org.springframework:spring-orm:6.1.0') {
+        exclude module: 'commons-logging'
+    }
+    implementation(group: 'org.springframework.data', name: 'spring-data-jpa', version: '3.2.0') {
+        exclude(module: 'commons-logging')
+    }
+    implementation (group: 'org.springframework.data', name: 'spring-data-commons', version: '3.2.1'){
+        exclude(module: 'commons-logging')
+    }
+    
+    //Hibernate dependency
+    implementation group: 'org.hibernate.orm', name: 'hibernate-core', version: '6.5.2.Final'
+    implementation group: 'org.hibernate.orm', name: 'hibernate-hikaricp', version: '6.5.2.Final'
+    implementation(group: 'org.hibernate.validator', name: 'hibernate-validator', version: '8.0.1.Final')
+    
+    implementation(group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0')
+    //Jakarta Dependency
+    implementation(group: 'jakarta.transaction', name: 'jakarta.transaction-api', version: '2.0.1')
+    implementation(group: 'jakarta.persistence', name: 'jakarta.persistence-api', version: '3.1.0')
+    implementation(group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.1')
+    implementation(group: 'jakarta.validation', name: 'jakarta.validation-api', version: '3.0.2')
+    implementation(group: 'jakarta.el', name: 'jakarta.el-api', version: '6.0.0')
+    implementation(group: 'org.glassfish', name: 'jakarta.el', version: '4.0.2')
+    implementation group: 'org.glassfish.expressly', name: 'expressly', version: '5.0.0'
+
+    //Jackson dependency
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.17.2'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.17.2'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.17.2'
+
+    //MySQL dependency
+    runtimeOnly(group: 'com.mysql', name: 'mysql-connector-j', version: '8.2.0')
+}
+
+application {
+    // Define the main class for the application.
+    mainClass = 'za.co.mkhungo.App'
+}
